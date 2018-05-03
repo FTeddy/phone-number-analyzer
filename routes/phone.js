@@ -1,14 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { analyzer } = require('../controllers/Analyzer')
-const numberProcessor = require('../middleware/numberProcessor')
-const fengShui = require('../middleware/fengShui')
-
-router.get('/', function(req, res, next) {
-  res.send('default ./phone');
-});
+const { numberProcessor, numberProcessorMany } = require('../middleware/numberProcessor')
+const { fengShui, fengShuiMany } = require('../middleware/fengShui')
 
 // route: /phone
-router.post('/change', numberProcessor, fengShui, analyzer)
+router.post('/analyze/one', numberProcessor, fengShui, analyzer)
+router.post('/analyze/many', numberProcessorMany, fengShuiMany, analyzer)
 
 module.exports = router;

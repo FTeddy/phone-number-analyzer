@@ -22,6 +22,31 @@ function numberProcessor (req, res, next) {
   next()
 }
 
+function numberProcessorMany (req, res, next) {
+  // check for number if available
+  if (!req.body) {
+    return res.status(400).json({
+      message: 'No data sent'
+    })
+  } else if (!req.body.numbers) {
+    return res.status(400).json({
+      message: 'No number sent'
+    })
+  }
+
+  // turn number into string and remove 5 and other symbols
+  let processed = []
+  for (var i = 0; i < req.body.numbers.length; i++) {
+    let number = String(req.body.numbers[i])
+    let trim = number.replace(/([^\d]|5)/g, '')
+    let clean = removeZeros(trim)
+    processed.push(clean)
+  }
+
+  req.cleans = processed
+  next()
+}
+
 function removeZeros (string) {
   let normalizeZero
   if (string[0] === '0') {
@@ -52,4 +77,7 @@ function removeZeros (string) {
   return result.join('')
 }
 
-module.exports = numberProcessor;
+module.exports = {
+  numberProcessor,
+  numberProcessorMany
+};

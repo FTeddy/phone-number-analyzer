@@ -2,6 +2,6 @@
 
 module.exports = {
   analyzer : (req, res) => {
-    res.send(req.result)
+    res.status(200).send(req.result)
   }
 };

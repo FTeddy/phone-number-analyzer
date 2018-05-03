@@ -117,6 +117,8 @@ function fengShui (req, res, next) {
 
   // construct response
   let result = {
+    input: req.body.number,
+    number: req.clean,
     matches: length-1,
     good: {
       kekayaan: `${kekayaan}/${length-1}, ` + String(Math.floor((kekayaan/(length-1)*100))) + '%',
@@ -138,4 +140,66 @@ function fengShui (req, res, next) {
   next()
 }
 
-module.exports = fengShui;
+function fengShuiMany (req, res, next) {
+
+  let processed = []
+  for (var i = 0; i < req.cleans.length; i++) {
+    let data = req.cleans[i]
+    let length = data.length
+
+    // good characteristics
+    let kekayaan = 0
+    let kesehatan = 0
+    let relasi = 0
+    let kestabilan = 0
+
+    // bad characteristics
+    let perselisihan = 0
+    let kehilangan = 0
+    let malapetaka = 0
+    let kehancuran = 0
+
+    for (let y = 0; y < data.length - 1; y++) {
+      let pair = data[y]+data[y+1]
+      if (hashKekayaan[pair]) {kekayaan++}
+      if (hashKesehatan[pair]) {kesehatan++}
+      if (hashRelasi[pair]) {relasi++}
+      if (hashKestabilan[pair]) {kestabilan++}
+      if (hashPerselisihan[pair]) {perselisihan++}
+      if (hashKehilangan[pair]) {kehilangan++}
+      if (hashMalapetaka[pair]) {malapetaka++}
+      if (hashKehancuran[pair]) {kehancuran++}
+    }
+
+    // construct response
+    let result = {
+      input: req.body.numbers[i],
+      number: data,
+      matches: length-1,
+      good: {
+        kekayaan: `${kekayaan}/${length-1}, ` + String(Math.floor((kekayaan/(length-1)*100))) + '%',
+        kesehatan: `${kesehatan}/${length-1}, ` + String(Math.floor((kesehatan/(length-1)*100))) + '%',
+        relasi: `${relasi}/${length-1}, ` + String(Math.floor((relasi/(length-1)*100))) + '%',
+        kestabilan: `${kestabilan}/${length-1}, ` + String(Math.floor((kestabilan/(length-1)*100))) + '%',
+        percentage: String(Math.floor((kekayaan+kesehatan+relasi+kestabilan)/(length-1)*100)) + '%'
+      },
+      bad: {
+        perselisihan: `${perselisihan}/${length-1}, ` + String(Math.floor((perselisihan/(length-1)*100))) + '%',
+        kehilangan: `${kehilangan}/${length-1}, ` + String(Math.floor((kehilangan/(length-1)*100))) + '%',
+        malapetaka: `${malapetaka}/${length-1}, ` + String(Math.floor((malapetaka/(length-1)*100))) + '%',
+        kehancuran: `${kehancuran}/${length-1}, ` + String(Math.floor((kehancuran/(length-1)*100))) + '%',
+        percentage: String(Math.floor((perselisihan+kehilangan+malapetaka+kehancuran)/(length-1)*100)) + '%'
+      }
+    }
+    processed.push(result)
+
+  }
+
+  req.result = processed
+  next()
+}
+
+module.exports = {
+  fengShui,
+  fengShuiMany
+};
